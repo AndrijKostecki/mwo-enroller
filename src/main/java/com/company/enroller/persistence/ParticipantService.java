@@ -1,6 +1,7 @@
 package com.company.enroller.persistence;
 
 import com.company.enroller.model.Participant;
+import javassist.runtime.Desc;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
@@ -18,18 +19,21 @@ public class ParticipantService {
 
     public Collection<Participant> getAll(String sortOrder, String key) {
         String hql = "FROM Participant";
-        if (key != null && key.isEmpty()) {
-            hql+="WHERE login LIKE '%"+key+"%' ";
+        if(key != null && key.isEmpty()){
+            hql += " WHERE login LIKE '%"+key+"%'";
         }
 
-        if ("ASC".equalsIgnoreCase(sortOrder)||"DESC".equalsIgnoreCase(sortOrder))
+if ("ASC".equalsIgnoreCase(sortOrder)|| "DESC".equalsIgnoreCase(sortOrder)) {
 
-        hql += "ORDER BY login" + sortOrder;
-        System.out.println(hql);
+
+    hql += " ORDER BY login " + sortOrder;
+}
+    System.out.println(hql);
 
         Query query = connector.getSession().createQuery(hql);
         return query.list();
     }
+
 
     public Participant findByLogin(String login) {
         return connector.getSession().get(Participant.class, login);
@@ -53,7 +57,5 @@ public class ParticipantService {
         connector.getSession().delete(participant);
         transaction.commit();
     }
-
-
 
 }
