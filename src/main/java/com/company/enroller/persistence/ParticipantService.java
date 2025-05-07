@@ -19,12 +19,11 @@ public class ParticipantService {
 
     public Collection<Participant> getAll(String sortOrder, String key) {
         String hql = "FROM Participant";
-        if(key != null && key.isEmpty()){
+        if(key != null && !key.isEmpty()){
             hql += " WHERE login LIKE '%"+key+"%'";
         }
 
 if ("ASC".equalsIgnoreCase(sortOrder)|| "DESC".equalsIgnoreCase(sortOrder)) {
-
 
     hql += " ORDER BY login " + sortOrder;
 }
