@@ -4,6 +4,7 @@ package com.company.enroller.controllers;
 import com.company.enroller.model.Meeting;
 import com.company.enroller.model.Participant;
 import com.company.enroller.persistence.MeetingService;
+import com.company.enroller.persistence.ParticipantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ public class MeetingRestController {
 
     @Autowired
     MeetingService meetingService;
+    ParticipantService participantService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getAllMeeting() {
@@ -63,6 +65,57 @@ public class MeetingRestController {
         meetingService.update(meeting);
         return new ResponseEntity<Participant>(HttpStatus.OK);
     }
+
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<?> getParticipants(@PathVariable long id) {
+        Meeting meeting = meetingService.findMeetingById(id);
+        if (meeting == null) {
+            return new ResponseEntity<>("Meeting not found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(meetingService.getParticipants(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/participants/{login}")
+    public ResponseEntity<?> addParticipant(@PathVariable long id, @PathVariable String login) {
+        Meeting meeting = meetingService.findMeetingById(id);
+        if (meeting == null) {
+            return new ResponseEntity<>("Meeting not found", HttpStatus.NOT_FOUND);
+        }
+
+        Participant participant = participantService.findByLogin(login);
+        if (participant == null) {
+            return new ResponseEntity<>("Participant not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (meeting.getParticipants().contains(participant)) {
+            return new ResponseEntity<>("Participant already in the meeting", HttpStatus.CONFLICT);
+        }
+
+        meetingService.addParticipantToMeeting(id, participant);
+        return new ResponseEntity<>("Participant added to meeting", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/participants/{login}")
+    public ResponseEntity<?> removeParticipant(@PathVariable long id, @PathVariable String login) {
+        Meeting meeting = meetingService.findMeetingById(id);
+        if (meeting == null) {
+            return new ResponseEntity<>("Meeting not found", HttpStatus.NOT_FOUND);
+        }
+
+        Participant participant = participantService.findByLogin(login);
+        if (participant == null) {
+            return new ResponseEntity<>("Participant not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (!meeting.getParticipants().contains(participant)) {
+            return new ResponseEntity<>("Participant not part of this meeting", HttpStatus.NOT_FOUND);
+        }
+
+        meetingService.removeParticipantFromMeeting(id, participant);
+        return new ResponseEntity<>("Participant removed from meeting", HttpStatus.OK);
+    }
+
+
 
 }
 

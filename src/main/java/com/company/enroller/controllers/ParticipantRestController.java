@@ -58,7 +58,7 @@ public class ParticipantRestController {
 		if (participant == null) {
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 		}
-		participantService.delete(participant);
+		participantService.remove(participant);
 		return new ResponseEntity<Participant>(HttpStatus.OK);
 	}
 

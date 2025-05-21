@@ -51,7 +51,7 @@ if ("ASC".equalsIgnoreCase(sortOrder)|| "DESC".equalsIgnoreCase(sortOrder)) {
         transaction.commit();
     }
 
-    public void delete(Participant participant) {
+    public void remove (Participant participant) {
         Transaction transaction = connector.getSession().beginTransaction();
         connector.getSession().delete(participant);
         transaction.commit();

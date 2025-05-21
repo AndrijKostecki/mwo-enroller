@@ -1,11 +1,13 @@
 package com.company.enroller.persistence;
 
 import com.company.enroller.model.Meeting;
+import com.company.enroller.model.Participant;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Collections;
 
 @Component("meetingService")
 public class MeetingService {
@@ -49,5 +51,31 @@ public class MeetingService {
         connector.getSession().merge(meeting);
         transaction.commit();
     }
+
+    public Collection<Participant> getParticipants(long meetingId) {
+        Meeting meeting = findMeetingById(meetingId);
+        if (meeting == null) {
+            return Collections.emptyList();
+        }
+        return meeting.getParticipants();
+    }
+
+    public void addParticipantToMeeting(long meetingId, Participant participant) {
+        Meeting meeting = findMeetingById(meetingId);
+        if (meeting != null) {
+            meeting.addParticipant(participant);
+            update(meeting);
+        }
+    }
+
+    public void removeParticipantFromMeeting(long meetingId, Participant participant) {
+        Meeting meeting = findMeetingById(meetingId);
+        if (meeting != null) {
+            meeting.removeParticipant(participant);
+            update(meeting);
+        }
+    }
+
+
 }
 
